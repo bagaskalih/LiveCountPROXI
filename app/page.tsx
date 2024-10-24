@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -35,9 +34,16 @@ export default function Home() {
     }
   };
 
-  const getMaxVotes = () => {
-    if (candidates.length === 0) return 0;
-    return Math.max(...candidates.map((c) => c.votes));
+  // Calculate total votes across all candidates
+  const getTotalVotes = () => {
+    return candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+  };
+
+  // Calculate percentage for a specific candidate
+  const getVotePercentage = (votes: number) => {
+    const totalVotes = getTotalVotes();
+    if (totalVotes === 0) return 0;
+    return (votes / totalVotes) * 100;
   };
 
   return (
@@ -67,6 +73,10 @@ export default function Home() {
             >
               Add Candidate
             </Button>
+          </div>
+
+          <div className="mb-4">
+            <p className="text-white">Total Votes: {getTotalVotes()}</p>
           </div>
 
           <div className="space-y-4">
@@ -100,15 +110,14 @@ export default function Home() {
                   <div
                     className="absolute h-full bg-primary transition-all duration-300"
                     style={{
-                      width: `${
-                        getMaxVotes()
-                          ? (candidate.votes / getMaxVotes()) * 100
-                          : 0
-                      }%`,
+                      width: `${getVotePercentage(candidate.votes)}%`,
                     }}
                   />
-                  <div className="absolute inset-0 flex items-center justify-end px-3">
-                    <span className="text-white font-medium">
+                  <div className="absolute inset-0 flex items-center justify-between px-3">
+                    {/* <span className="text-white font-medium z-10">
+                      {getVotePercentage(candidate.votes).toFixed(1)}%
+                    </span> */}
+                    <span className="text-white font-medium z-10">
                       {candidate.votes} votes
                     </span>
                   </div>
